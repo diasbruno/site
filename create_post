@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+source ./configuration
+
+POST_DATE=`date_now_iso8061`
+FILE_NAME=`slugfy "$1"`
+
+POST_FILE_NAME=`post_file_name $POST_DATE $FILE_NAME`
+
+new_post "$POST_DATE" "$1" "$POST_FILE_NAME"
+
+touch $POSTS_DIR/$POST_FILE_NAME.md

@@ -1,0 +1,45 @@
+#!/bin/sh
+
+set -e
+
+source ./configuration
+
+PAGE_OUTPUT_FILE=`page_output_file $1`
+
+mkdir -p `page_output_dir $1`
+
+cat <<EOF>$PAGE_OUTPUT_FILE
+<!DOCTYPE html>
+<html>
+EOF
+
+cat template/head.html >> $PAGE_OUTPUT_FILE
+
+cat <<EOF>>$PAGE_OUTPUT_FILE
+<body>
+EOF
+
+cat template/header.html >> $PAGE_OUTPUT_FILE
+
+cat <<EOF>>$PAGE_OUTPUT_FILE
+<main>
+<div class="articles full-width">
+<article class="post">
+EOF
+
+markdown $PAGES_DIR/$1.md >> $PAGE_OUTPUT_FILE
+
+cat <<EOF>>$PAGE_OUTPUT_FILE
+</article>
+</div>
+</main>
+EOF
+
+cat template/footer.html >> $PAGE_OUTPUT_FILE
+
+cat <<EOF>>$PAGE_OUTPUT_FILE
+</body>
+</html>
+EOF
+
+cat $PAGE_OUTPUT_FILE

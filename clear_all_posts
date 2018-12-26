@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+source ./configuration
+
+rm -rf $POSTS_DIR/* $POSTS_METADATA_DIR/* $POSTS_OUTPUT_DIR/*
+db 'delete from posts'

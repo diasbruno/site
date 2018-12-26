@@ -1,0 +1,51 @@
+#!/bin/sh
+
+set -e
+
+source ./configuration
+
+POST_ID=$1
+POST_TITLE=`post_item title $1`
+POST_FILENAME=`post_item filename $1`
+POST_OUTPUT_FILENAME=`slugfy "$POST_TITLE"`
+
+POST_OUTPUT_FILE=`post_output_file "$POST_OUTPUT_FILENAME"`
+
+cat <<EOF>$POST_OUTPUT_FILE
+<!DOCTYPE html>
+<html>
+EOF
+
+cat template/head.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+<body>
+EOF
+
+cat template/header.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+<main>
+<div class="articles">
+<article class="post">
+EOF
+
+markdown $POSTS_DIR/$POST_FILENAME.md >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+</article>
+<aside class="read-more">
+  meh
+</aside>
+</div>
+</main>
+EOF
+
+cat template/footer.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+</body>
+</html>
+EOF
+
+cat $POST_OUTPUT_FILE

@@ -1,0 +1,68 @@
+#!/bin/sh
+
+export OUTPUT_DIR="../diasbruno.github.io"
+
+export PAGES_DIR="./pages";
+
+export POSTS_DIR="./posts";
+export POSTS_METADATA_DIR="./.metadata"
+export POSTS_STORAGE='site.db'
+export POST_FILE_DATE_FMT="%Y-%m-%d-%H-%M-%S";
+
+# date/time
+
+date_now_iso8061 () {
+    date --iso-8601="seconds"
+}
+
+# pages
+
+page_output_dir () {
+    echo $OUTPUT_DIR/$1
+}
+
+page_output_file () {
+    echo `page_output_dir $1`/index.html
+}
+
+# posts
+
+post_file_date_fmt () {
+    date "+$POST_FILE_DATE_FMT" --date="$1";
+}
+
+post_file_name () {
+    local x=`post_file_date_fmt $1`
+    echo "$x-$2"
+}
+
+post_output_file () {
+    mkdir -p $POSTS_OUTPUT_DIR/articles
+    echo $POSTS_OUTPUT_DIR/articles/$1.html
+}
+
+# database
+
+db () {
+    sqlite3 $POSTS_STORAGE "$1";
+}
+
+list_posts () {
+    db "select * from posts"
+}
+
+new_post () {
+    db "insert into posts (created_at, updated_at, title, filename) values ('$1','$1',\"$2\",\"$3\");"
+}
+
+last_post() {
+    db 'select * from posts order by id desc limit 1'
+}
+
+post_item() {
+    db "select $1 from posts where id = $2"
+}
+
+slugfy() {
+    echo $1 | sed "s/\s/-/g"
+}
