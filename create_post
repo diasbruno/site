@@ -4,8 +4,12 @@ set -e
 
 source ./configuration
 
+# must have a look on this.
+# and update the reference.
+# http://alexanderussell.org/progress-for-jekyll/about/
+
 POST_DATE=`date_now_iso8061`
-FILE_NAME=`slugfy "$1"`
+FILE_NAME=`lowercase $(slugfy "$1")`
 
 POST_FILE_NAME=`post_file_name $POST_DATE $FILE_NAME`
 

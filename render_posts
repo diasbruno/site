@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -e
+
+source ./configuration
+
+echo "rendering articles..."
+
+POST_OUTPUT_FILE="$OUTPUT_DIR/articles/index.html"
+
+cat <<EOF>$POST_OUTPUT_FILE
+<!DOCTYPE html>
+<html>
+EOF
+
+cat template/head.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+<body>
+EOF
+
+cat template/header.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+<main>
+<div class="articles full-width">
+EOF
+
+for post_id in `db "select id from posts order by id desc"`; do
+    POST_DATE=`db "select created_at from posts where id = '$post_id'"`
+    FORMATTED_POST_DATE=`post_date $POST_DATE`
+    POST_FILENAME=`lowercase "$(db "select title from posts where id = '$post_id'")"`
+    POST_HREF=`post_output_file $POST_FILENAME`
+    echo $POST_FILENAME
+
+    cat <<EOF>>$POST_OUTPUT_FILE
+<article class="post">
+   <h1 class="title"><a href="/articles/`slugfy "$POST_FILENAME".html`">$(db "select title from posts where id = '$post_id'")</a></h1>
+   <time date="$POST_DATE">$FORMATTED_POST_DATE</time>
+</article>
+EOF
+done
+
+cat <<EOF>>$POST_OUTPUT_FILE
+</div>
+</main>
+EOF
+
+cat template/footer.html >> $POST_OUTPUT_FILE
+
+cat <<EOF>>$POST_OUTPUT_FILE
+</body>
+</html>
+EOF
+
+cat $POST_OUTPUT_FILE | pygmentize

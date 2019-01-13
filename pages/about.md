@@ -1,1 +1,3 @@
 # about
+
+I enjoy writing a lot of code...

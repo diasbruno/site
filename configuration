@@ -8,11 +8,26 @@ export POSTS_DIR="./posts";
 export POSTS_METADATA_DIR="./.metadata"
 export POSTS_STORAGE='site.db'
 export POST_FILE_DATE_FMT="%Y-%m-%d-%H-%M-%S";
+export POSTS_OUTPUT_DIR="$OUTPUT_DIR"
+
+# strings
+
+lowercase() {
+    echo $1 | tr '[:upper:]' '[:lower:]'
+}
 
 # date/time
 
 date_now_iso8061 () {
     date --iso-8601="seconds"
+}
+
+format_date () {
+    date --date="$1" "$2"
+}
+
+post_date () {
+    format_date $1 "+%a, %d/%m/%Y %H:%M"
 }
 
 # pages
@@ -37,7 +52,6 @@ post_file_name () {
 }
 
 post_output_file () {
-    mkdir -p $POSTS_OUTPUT_DIR/articles
     echo $POSTS_OUTPUT_DIR/articles/$1.html
 }
 

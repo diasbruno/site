@@ -8,8 +8,14 @@ POST_ID=$1
 POST_TITLE=`post_item title $1`
 POST_FILENAME=`post_item filename $1`
 POST_OUTPUT_FILENAME=`slugfy "$POST_TITLE"`
+POST_OUTPUT_FILE=`lowercase $(post_output_file "$POST_OUTPUT_FILENAME")`
 
-POST_OUTPUT_FILE=`post_output_file "$POST_OUTPUT_FILENAME"`
+cat <<EOF
+rendering article...
+post id: $POST_ID
+title: $POST_TITLE
+output file $POST_OUTPUT_FILE
+EOF
 
 cat <<EOF>$POST_OUTPUT_FILE
 <!DOCTYPE html>
@@ -26,7 +32,7 @@ cat template/header.html >> $POST_OUTPUT_FILE
 
 cat <<EOF>>$POST_OUTPUT_FILE
 <main>
-<div class="articles">
+<div class="articles full-width">
 <article class="post">
 EOF
 
@@ -34,9 +40,6 @@ markdown $POSTS_DIR/$POST_FILENAME.md >> $POST_OUTPUT_FILE
 
 cat <<EOF>>$POST_OUTPUT_FILE
 </article>
-<aside class="read-more">
-  meh
-</aside>
 </div>
 </main>
 EOF
@@ -44,8 +47,17 @@ EOF
 cat template/footer.html >> $POST_OUTPUT_FILE
 
 cat <<EOF>>$POST_OUTPUT_FILE
+<script type="application/javascript" src="/js/highlight.min.js"></script>
+<script type="application/javascript">
+(function() {
+  var blocks = document.querySelectorAll("pre code");
+  Array.from(blocks).map(function(block) {
+    hljs.highlightBlock(block);
+  });
+}());
+</script>
 </body>
 </html>
 EOF
 
-cat $POST_OUTPUT_FILE
+cat $POST_OUTPUT_FILE | pygmentize
